@@ -170,38 +170,6 @@ namespace VSharpBSP
             }
             GC.Collect();
 
-            // DEPRECATED: loops and renders all faces
-            //// Each face is its own gameobject
-            //// 1=polygon, 2=patch, 3=mesh, 4=billboard 
-            //foreach (Face face in map.faceLump.Faces)
-            //{
-            //    if (face.type == 2)
-            //    {
-            //        if (renderBezPatches)
-            //        {
-            //            GenerateBezObject(face, mContainer);
-            //        }
-            //        faceCount++;
-            //    }
-            //    else if (face.type == 1)
-            //    {
-            //        GeneratePolygonObject(face, mContainer);
-            //        faceCount++;
-            //    }
-            //    else if (face.type == 3)
-            //    {
-            //        GeneratePolygonObject(face, mContainer);
-            //        faceCount++;
-            //    }
-            //    else
-            //    {
-            //        //GeneratePolygonObject(face, mContainer);
-            //        Debug.Log("Skipped Face " + faceCount.ToString() + " because it was not a polygon, mesh, or bez patch.");
-            //        faceCount++;
-            //    }
-            //}
-            //GC.Collect();
-
             //
             // ENTITIES
             //
@@ -360,10 +328,10 @@ namespace VSharpBSP
             {
                 // Hardcode matches
                 case string cname when cname.StartsWith("ammo"):
-                    entityComponentName = "Entities.Item";
+                    entityComponentName = "VSharpBSP.Entities.Item";
                     break;
                 case string cname when cname.StartsWith("light") || cname.StartsWith("ambient"):
-                    entityComponentName = "Entities.Light";
+                    entityComponentName = "VSharpBSP.Entities.Light";
                     break;
                 // "SmartMatch(TM)"
                 default:
@@ -377,15 +345,15 @@ namespace VSharpBSP
 
                             if (classname.StartsWith(fileName.ToLower()))
                             {
-                                Type classType = Type.GetType($"Entities.{fileName}");
+                                Type classType = Type.GetType($"VSharpBSP.Entities.{fileName}");
                                 if (classType != null)
-                                    entityComponentName = $"Entities.{fileName}";
+                                    entityComponentName = $"VSharpBSP.Entities.{fileName}";
                                 break;
                             }
                             // If at end of list of files, add Misc component
                             else if (i == (files.Length - 1))
                             {
-                                entityComponentName = "Entities.Misc";
+                                entityComponentName = "VSharpBSP.Entities.Misc";
                                 break;
                             }
                         }
@@ -407,20 +375,6 @@ namespace VSharpBSP
             string fileName = Path.GetFileName(path);
             fileName = fileName.Split('.').First();
             return fileName;
-        }
-
-        // TODO move to Util class
-        // Used to calculate mid point of such things as bounding boxes, or anthing that has a min & max vector
-        private Vector3 GetMidPoint(Vector3 start, Vector3 end, bool scale = false)
-        {
-            Vector3 difference = start - end;
-            Vector3 quarterPoint = start + difference * 0.25f;
-            Vector3 midPoint = start + difference * 0.5f;
-
-            if (scale)
-                return midPoint * Constants.f_scaleMultiple;
-            else
-                return midPoint;
         }
 
         #region Object Generation
@@ -698,7 +652,5 @@ namespace VSharpBSP
             return map.textureLump.Textures[face.texture].Name;
         }
     }
-
-    
 }
 

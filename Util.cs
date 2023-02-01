@@ -93,6 +93,20 @@ namespace VSharpBSP
             }
             return false;
         }
+        
+        // Used to calculate mid point of such things as bounding boxes,
+        // or anything that has a min & max vector
+        public static Vector3 GetMidPoint(Vector3 start, Vector3 end, bool scale = false)
+        {
+            Vector3 difference = start - end;
+            Vector3 quarterPoint = start + difference * 0.25f;
+            Vector3 midPoint = start + difference * 0.5f;
+
+            if (scale)
+                return midPoint * Constants.f_scaleMultiple;
+            
+            return midPoint;
+        }
     }
 }
 

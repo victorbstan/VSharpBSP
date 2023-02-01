@@ -9,7 +9,6 @@ namespace VSharpBSP
 {
     public static class TGALoader
     {
-
         public static Texture2D LoadTGA(string fileName)
         {
             using (var imageFile = File.OpenRead(fileName))
@@ -67,7 +66,6 @@ namespace VSharpBSP
                 tex.SetPixels32(pulledColors);
                 tex.Apply();
                 return tex;
-
             }
         }
     }
