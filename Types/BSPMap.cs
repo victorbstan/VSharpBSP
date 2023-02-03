@@ -26,6 +26,7 @@ namespace VSharpBSP
         public BSPModelLump modelLump;
         public BSPBrushLump brushLump;
         public BSPBrushsideLump brushsideLump;
+        public BSPPLaneLump planeLump;
 
         public BSPMap(string filename, bool loadFromPK3)
         {
@@ -71,6 +72,7 @@ namespace VSharpBSP
             ReadLightmaps();
             ReadBrushes();
             ReadBrushsides();
+            ReadPlanes();
 
             // Comb through all of the available .pk3 files and load in any textures needed by the current map.
             // Textures in higher numbered .pk3 files will be used over ones in lower ones.
@@ -131,7 +133,6 @@ namespace VSharpBSP
                     new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()),
                     BSP.ReadBytes(4));
             }
-
         }
 
         private void ReadFaces()
@@ -153,22 +154,22 @@ namespace VSharpBSP
                     BSP.ReadInt32(),
                     BSP.ReadInt32(),
                     new int[]
-                {
-                    BSP.ReadInt32(),
-                    BSP.ReadInt32()
-                }, new int[]
-                {
-                    BSP.ReadInt32(),
-                    BSP.ReadInt32()
-                }, new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()), new Vector3[]
-                {
-                    new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()),
-                    new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle())
-                }, new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()), new int[]
-                {
-                    BSP.ReadInt32(),
-                    BSP.ReadInt32()
-                });
+                    {
+                        BSP.ReadInt32(),
+                        BSP.ReadInt32()
+                    }, new int[]
+                    {
+                        BSP.ReadInt32(),
+                        BSP.ReadInt32()
+                    }, new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()), new Vector3[]
+                    {
+                        new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()),
+                        new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle())
+                    }, new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()), new int[]
+                    {
+                        BSP.ReadInt32(),
+                        BSP.ReadInt32()
+                    });
             }
         }
 
@@ -204,7 +205,7 @@ namespace VSharpBSP
                     BSP.ReadInt32(),
                     BSP.ReadInt32(),
                     BSP.ReadInt32()
-                    );
+                );
             }
         }
 
@@ -235,7 +236,7 @@ namespace VSharpBSP
                     BSP.ReadInt32(),
                     BSP.ReadInt32(),
                     BSP.ReadInt32()
-                    );
+                );
             }
         }
 
@@ -252,7 +253,24 @@ namespace VSharpBSP
                 brushsideLump.Brushsides[i] = new BSPBrushside(
                     BSP.ReadInt32(),
                     BSP.ReadInt32()
-                    );
+                );
+            }
+        }
+
+        private void ReadPlanes()
+        {
+            BSP.BaseStream.Seek(header.Directory[2].Offset, SeekOrigin.Begin);
+            int planesCount = header.Directory[2].Length / 16;
+            planeLump = new BSPPLaneLump(planesCount);
+            for (int i = 0; i < planesCount; i++)
+            {
+                // http://www.mralligator.com/q3/#Planes
+                // float[3] normal 	Plane normal.
+                // float dist 	Distance from origin to plane along normal. 
+                planeLump.Planes[i] = new BSPPlane(
+                    new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()),
+                    BSP.ReadInt32()
+                );
             }
         }
     }
