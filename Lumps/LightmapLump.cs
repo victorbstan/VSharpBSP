@@ -35,8 +35,9 @@ namespace VSharpBSP
             int j = 0;
             for (int i = 0; i < 128 * 128; i++)
             {
-                colors [i] = new Color32(CalcLight(rgb [j++]), CalcLight(rgb [j++]), CalcLight(rgb [j++]), (byte)1f);
+                colors[i] = new Color32(CalcLight(rgb[j++]), CalcLight(rgb[j++]), CalcLight(rgb[j++]), (byte)1f);
             }
+
             tex.SetPixels32(colors);
             tex.Apply();
             return tex;

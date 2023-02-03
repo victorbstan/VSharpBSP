@@ -1,14 +1,8 @@
-﻿
-namespace VSharpBSP
+﻿namespace VSharpBSP
 {
     public class EntityLump
     {
-        public string EntityString
-        {
-            get;
-            private set;
-        }
-
+        public string EntityString { get; private set; }
 
         public EntityLump(string lump)
         {

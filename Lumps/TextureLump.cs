@@ -9,29 +9,27 @@ namespace VSharpBSP
 {
     public class TextureLump
     {
-		public Texture[] Textures{ get; set; }
-        private Dictionary<string,Texture2D> readyTextures = new Dictionary<string, Texture2D>();
+        public Texture[] Textures { get; set; }
+        private Dictionary<string, Texture2D> readyTextures = new Dictionary<string, Texture2D>();
 
         public TextureLump(int textureCount)
         {
-			Textures = new Texture[textureCount];
+            Textures = new Texture[textureCount];
         }
 
         public int TextureCount
-        { 
-            get
-            {
-                return Textures.Length; 
-            } 
+        {
+            get { return Textures.Length; }
         }
 
         public bool ContainsTexture(string textureName)
         {
-            foreach (KeyValuePair<string,Texture2D> tex in readyTextures)
+            foreach (KeyValuePair<string, Texture2D> tex in readyTextures)
             {
                 if (tex.Key == textureName)
                     return true;
             }
+
             return false;
         }
 
@@ -57,23 +55,24 @@ namespace VSharpBSP
                 if (pk3.ContainsEntry(tex.Name + ".jpg"))
                 {
                     Texture2D readyTex = new Texture2D(4, 4);
-                    var entry = pk3 [tex.Name + ".jpg"];
+                    var entry = pk3[tex.Name + ".jpg"];
                     using (var stream = entry.OpenReader())
                     {
                         var ms = new MemoryStream();
                         entry.Extract(ms);
                         readyTex.LoadImage(ms.GetBuffer());
                     }
-                    
+
                     readyTex.name = tex.Name;
                     readyTex.filterMode = FilterMode.Trilinear;
                     readyTex.Compress(true);
-                    
+
                     if (readyTextures.ContainsKey(tex.Name))
                     {
                         Debug.Log("Updating texture with name " + tex.Name + ".jpg");
                         readyTextures[tex.Name] = readyTex;
-                    } else
+                    }
+                    else
                         readyTextures.Add(tex.Name, readyTex);
                 }
             }
@@ -87,7 +86,7 @@ namespace VSharpBSP
                 if (pk3.ContainsEntry(tex.Name + ".tga"))
                 {
                     Texture2D readyTex = new Texture2D(4, 4);
-                    var entry = pk3 [tex.Name + ".tga"];
+                    var entry = pk3[tex.Name + ".tga"];
                     using (var stream = entry.OpenReader())
                     {
                         var ms = new MemoryStream();
@@ -102,8 +101,9 @@ namespace VSharpBSP
                     if (readyTextures.ContainsKey(tex.Name))
                     {
                         Debug.Log("Updating texture with name " + tex.Name + ".tga");
-                        readyTextures [tex.Name] = readyTex;
-                    } else
+                        readyTextures[tex.Name] = readyTex;
+                    }
+                    else
                         readyTextures.Add(tex.Name, readyTex);
                 }
             }
@@ -112,12 +112,14 @@ namespace VSharpBSP
 
         public string PrintInfo()
         {
-			StringBuilder blob = new StringBuilder ();
+            StringBuilder blob = new StringBuilder();
             int count = 0;
             foreach (Texture tex in Textures)
             {
-                blob.Append("Texture " + count++ + " Name: " + tex.Name.Trim() + "\tFlags: " + tex.Flags.ToString() + "\tContents: " + tex.Contents.ToString() + "\r\n");
+                blob.Append("Texture " + count++ + " Name: " + tex.Name.Trim() + "\tFlags: " + tex.Flags.ToString() +
+                            "\tContents: " + tex.Contents.ToString() + "\r\n");
             }
+
             return blob.ToString();
         }
     }

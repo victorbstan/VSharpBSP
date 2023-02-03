@@ -17,9 +17,13 @@ namespace VSharpBSP
             int count = 0;
             foreach (Face face in Faces)
             {
-                blob.AppendLine("Face " + count.ToString() + "\t Tex: " + face.texture.ToString() + "\tType: " + face.type.ToString() + "\tVertIndex: " + face.vertex.ToString() + "\tNumVerts: " + face.n_vertexes.ToString() + "\tMeshVertIndex: " + face.meshvert.ToString() + "\tMeshVerts: " + face.n_meshverts + "\r\n");
+                blob.AppendLine("Face " + count.ToString() + "\t Tex: " + face.texture.ToString() + "\tType: " +
+                                face.type.ToString() + "\tVertIndex: " + face.vertex.ToString() + "\tNumVerts: " +
+                                face.n_vertexes.ToString() + "\tMeshVertIndex: " + face.meshvert.ToString() +
+                                "\tMeshVerts: " + face.n_meshverts + "\r\n");
                 count++;
             }
+
             return blob.ToString();
         }
     }

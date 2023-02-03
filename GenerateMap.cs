@@ -33,6 +33,7 @@ namespace VSharpBSP
 
         public void Run()
         {
+            // TODO: move this somewhere else
             List<string> presetNoClipTextures = new List<string> {
                 "models/mapobjects/teleporter/energy", "models/mapobjects/teleporter/widget",
                 "models/mapobjects/slamp/", "models/mapobjects/flag/", "models/mapobjects/storch/",
@@ -50,17 +51,11 @@ namespace VSharpBSP
             GameObject meshesContainer = new GameObject(Constants.modelsDirName);
             // Add as child of parent (this) game object
             meshesContainer.transform.parent = gameObject.transform;
-
-            /*
-             * 
-             * NOTE: not used, no practical use for brushes in Unity context, that I can think of
-             * 
-             * // Create brushes container game object, parent of all entities in scene
-             * GameObject brushesContainer = new GameObject("Brushes");
-             * // Add as child of parent (this) game object
-             * brushesContainer.transform.parent = gameObject.transform;
-             *
-             */
+            
+            // Create brushes container game object, parent of all entities in scene
+            GameObject brushesContainer = new GameObject("Brushes");
+            // Add as child of parent (this) game object
+            brushesContainer.transform.parent = gameObject.transform;
 
             // Create a new BSPmap, which is an object that
             // represents the map and all its data as a whole
@@ -140,31 +135,24 @@ namespace VSharpBSP
                     }
                 }
 
-
                 // MODEL BRUSHES
-
-                /*
-                 * 
-                 * Model > Brushes > Brushsides > Plane > ??? How to mesh?
-                 * 
-                 * NOTE: This section might not be usable in Unity,
-                 * I don't know how to build collision shapes from this
-                 * 
-                 *
-                 * // Create Brushes container game object for each mesh
-                 * GameObject bContainer = new GameObject($"Brush_{modelIndex}");
-                 * // Add as child of parent meshesContainer game object
-                 * bContainer.transform.parent = brushesContainer.transform;
-                 *
-                 * // BRUSHES
-                 *
-                 * BSPBrush[] modelBrushes = map.brushLump.Brushes.Skip(model.brushIndex).Take(model.brushCount).ToArray();
-                 * foreach (BSPBrush brush in modelBrushes)
-                 * {
-                 * }
-                 *   
-                 *   
-                 */
+                
+                // Model > Brushes > Brushsides > Plane > BrushToMesh()
+                // NOTE: This section might not be usable in Unity,
+                // I don't know how to build collision shapes from this
+                
+                // Create Brushes container game object for each mesh
+                GameObject bContainer = new GameObject($"Brush_{modelIndex}");
+                // Add as child of parent meshesContainer game object
+                bContainer.transform.parent = brushesContainer.transform;
+                
+                // BRUSHES
+                
+                BSPBrush[] modelBrushes = map.brushLump.Brushes.Skip(model.brushIndex).Take(model.brushCount).ToArray();
+                foreach (BSPBrush brush in modelBrushes)
+                {
+                    Debug.Log(brush);
+                }
 
                 modelIndex++;
             }
