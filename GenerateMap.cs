@@ -45,7 +45,6 @@ namespace VSharpBSP
             };
             // Initialize hardcoded list of no clip texture prefixes
             _noClipTextures = customNoClipTextures.Concat(presetNoClipTextures).ToList();
-            Debug.Log("NO CLIP TEXTURES COUNT: " + _noClipTextures.Count);
             
             // Create meshes container game object, parent of all entities in scene
             GameObject meshesContainer = new GameObject(Constants.modelsDirName);
@@ -138,22 +137,23 @@ namespace VSharpBSP
                 // MODEL BRUSHES
                 
                 // Model > Brushes > Brushsides > Plane > BrushToMesh()
-                // NOTE: This section might not be usable in Unity,
-                // I don't know how to build collision shapes from this
-                
                 // Create Brushes container game object for each mesh
                 GameObject bContainer = new GameObject($"Brush_{modelIndex}");
                 // Add as child of parent meshesContainer game object
                 bContainer.transform.parent = brushesContainer.transform;
                 
-                // BRUSHES
-                
                 BSPBrush[] modelBrushes = map.brushLump.Brushes.Skip(model.brushIndex).Take(model.brushCount).ToArray();
+                List<Polyhedron> polyhedra = new List<Polyhedron>();
                 foreach (BSPBrush brush in modelBrushes)
                 {
-                    Debug.Log(brush);
+                    BSPBrushside[] brushSides = map.brushsideLump.Brushsides.Skip(brush.brushsideIndex).Take(brush.brushdidesCount).ToArray();
+                    List<BSPPlane> planes = new List<BSPPlane>(); 
+                    foreach (var brushside in brushSides)
+                        planes.Add(map.planeLump.Planes[brushside.planeIndex]);
+                    
+                    polyhedra.Add(new Polyhedron(planes));
                 }
-
+                
                 modelIndex++;
             }
             GC.Collect();
@@ -339,7 +339,7 @@ namespace VSharpBSP
                                 break;
                             }
                             // If at end of list of files, add Misc component
-                            else if (i == (files.Length - 1))
+                            if (i == (files.Length - 1))
                             {
                                 entityComponentName = "VSharpBSP.Entities.Misc";
                                 break;
@@ -398,12 +398,12 @@ namespace VSharpBSP
             GameObject faceObject = new GameObject("BSPface " + faceCount.ToString());
             faceObject.isStatic = isStatic;
             faceObject.transform.parent = mContainer.transform;
-            // Our GeneratePolygonMesh will optimze and add the UVs for us
+            // Our GeneratePolygonMesh will optimize and add the UVs for us
             faceObject.AddComponent<MeshFilter>().mesh = GeneratePolygonMesh(face);
             faceObject.AddComponent<MeshRenderer>();
-            Debug.Log("TEX NAME: " + FetchTextureName(face));
-            if (Util.StrStartsWithAny(FetchTextureName(face), _noClipTextures))
-                Debug.Log("MATCH: " + FetchTextureName(face));
+            // Debug.Log("TEX NAME: " + FetchTextureName(face));
+            // if (Util.StrStartsWithAny(FetchTextureName(face), _noClipTextures))
+            //     Debug.Log("MATCH: " + FetchTextureName(face));
             if (Util.StrStartsWithAny(FetchTextureName(face), _noClipTextures) == false)
                 faceObject.AddComponent<MeshCollider>();
             if (useRippedTextures)
