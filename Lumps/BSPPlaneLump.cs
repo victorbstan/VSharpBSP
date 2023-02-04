@@ -21,7 +21,7 @@ namespace VSharpBSP
             int count = 0;
             foreach (BSPPlane plane in Planes)
             {
-                blob.Append("Plane " + count.ToString());
+                blob.Append("Plane_" + count.ToString());
                 count++;
             }
 

@@ -106,8 +106,6 @@ namespace VSharpBSP.Entities
                 if (bBoxGO.GetComponent<BoxCollider>())
                     return;
 
-                Debug.Log("SETTING UP BOX COLLIDERS FOR FUNC");
-
                 // Add trigger component to bounding box
                 BoxCollider bBoxCol = bBoxGO.AddComponent<BoxCollider>();
                 bBoxCol.isTrigger = true;

@@ -11,12 +11,12 @@ namespace VSharpBSP
         // float dist 	Distance from origin to plane along normal. 
 
         public Vector3 normal;
-        public float dist;
+        public float distance;
 
         public BSPPlane(Vector3 normal, float dist)
         {
             this.normal = normal;
-            this.dist = dist;
+            this.distance = dist;
         }
     }
 }
