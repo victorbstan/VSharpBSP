@@ -7,16 +7,18 @@ namespace VSharpBSP
     public class Polyhedron
     {
         public readonly BSPPlane[] planes;
-        public List<Vector3> pointCloud;
+        public HashSet<Vector3> vertices;
+        public int[] triangles;
 
-        public Polyhedron(IEnumerable<BSPPlane> planes)
+        public Polyhedron(IEnumerable<BSPPlane> newPlanes)
         {
-            this.planes = planes.ToArray();
-            this.pointCloud = new List<Vector3>();
-            this.PointCloud();
+            this.planes = newPlanes.ToArray();
+            this.vertices = new HashSet<Vector3>();
+            this.ProcessVertices();
+            // this.triangles = ConvexHull.Generate(this.vertices.ToArray());
         }
 
-        public List<Vector3> PointCloud()
+        public void ProcessVertices()
         {
             for (int i = 0; i < planes.Length; i++)
             {
@@ -33,21 +35,20 @@ namespace VSharpBSP
                         Vector3 point = new Vector3();
                         if (GetPlaneIntersectionPoint(p1, p2, p3, out point))
                         {
-                            pointCloud.Add(point);
+                            this.vertices.Add(point);
                         }
                     }
                 }
             }
-
-            return pointCloud;
         }
 
         private bool GetPlaneIntersectionPoint(BSPPlane p0, BSPPlane p1, BSPPlane p2, out Vector3 intersectionPoint)
         {
             const float EPSILON = 1e-4f;
 
-            var det = Vector3.Dot(Vector3.Cross(p0.normal, p1.normal), p2.normal);
-            if (det < EPSILON)
+            var dot = Vector3.Dot(Vector3.Cross(p0.normal, p1.normal), p2.normal);
+            if (dot < float.Epsilon)
+            // if (dot < EPSILON)
             {
                 intersectionPoint = Vector3.zero;
                 return false;
@@ -56,7 +57,7 @@ namespace VSharpBSP
             intersectionPoint =
                 (-(p0.distance * Vector3.Cross(p1.normal, p2.normal)) -
                  (p1.distance * Vector3.Cross(p2.normal, p0.normal)) -
-                 (p2.distance * Vector3.Cross(p0.normal, p1.normal))) / det;
+                 (p2.distance * Vector3.Cross(p0.normal, p1.normal))) / dot;
 
             return true;
         }
