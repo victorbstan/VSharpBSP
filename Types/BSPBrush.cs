@@ -18,5 +18,13 @@ namespace VSharpBSP
             this.brushdidesCount = brushdidesCount;
             this.textureIndex = textureIndex;
         }
+        
+        public bool IsValid()
+        {
+            if (brushdidesCount > 3)
+                return true;
+            else
+                return false;
+        }
     }
 }
