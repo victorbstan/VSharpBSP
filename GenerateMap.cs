@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Linq;
+using VSharpBSP.Extensions;
+using Random = UnityEngine.Random;
 
 namespace VSharpBSP
 {
@@ -11,6 +13,7 @@ namespace VSharpBSP
         // Public
         public bool generateAtRuntime = true;
         public Material replacementTexture;
+        public Material vertexPoint;
         public bool useRippedTextures;
         public bool renderBezPatches;
         public string mapName;
@@ -122,7 +125,7 @@ namespace VSharpBSP
                     else if (face.type == 4) // billboard
                     {
                         // Skipping because it was not a polygon, mesh, or bez patch
-                        Debug.Log($"Skipped Face type {face.type} (billboard) {faceCount.ToString()}.");
+                        // Debug.Log($"Skipped Face type {face.type} (billboard) {faceCount.ToString()}.");
                         faceCount++;
                     }
                     else
@@ -134,24 +137,89 @@ namespace VSharpBSP
                     }
                 }
 
+                
                 // MODEL BRUSHES
-                
-                // Model > Brushes > Brushsides > Plane > BrushToMesh()
-                // Create Brushes container game object for each mesh
-                GameObject bContainer = new GameObject($"Brush_{modelIndex}");
-                // Add as child of parent meshesContainer game object
-                bContainer.transform.parent = brushesContainer.transform;
-                
-                BSPBrush[] modelBrushes = map.brushLump.Brushes.Skip(model.brushIndex).Take(model.brushCount).ToArray();
-                List<Polyhedron> polyhedra = new List<Polyhedron>();
-                foreach (BSPBrush brush in modelBrushes)
+
+                if (modelIndex > 0)
                 {
-                    BSPBrushside[] brushSides = map.brushsideLump.Brushsides.Skip(brush.brushsideIndex).Take(brush.brushdidesCount).ToArray();
-                    List<BSPPlane> planes = new List<BSPPlane>(); 
-                    foreach (var brushside in brushSides)
-                        planes.Add(map.planeLump.Planes[brushside.planeIndex]);
+                    // Model > Brushes > Brushsides > Plane > BrushToMesh()
+                    // // Create Brushes container game object for each mesh
+                    // GameObject bContainer = new GameObject($"Brush_{modelIndex}");
+                    // // Add as child of parent meshesContainer game object
+                    // bContainer.transform.parent = brushesContainer.transform;
                     
-                    polyhedra.Add(new Polyhedron(planes));
+                    BSPBrush[] modelBrushes = map.brushLump.Brushes.Skip(model.brushIndex).Take(model.brushCount).ToArray();
+                    List<Polyhedron> modelPolyhedra = new List<Polyhedron>();
+                    int brushIndex = 0;
+                    foreach (BSPBrush brush in modelBrushes)
+                    {
+                        // Get brush data
+                        BSPBrushside[] brushSides = map.brushsideLump.Brushsides.Skip(brush.brushsideIndex).Take(brush.brushdidesCount).ToArray();
+
+                        List<BSPPlane> brushPlanes = new List<BSPPlane>();
+                        foreach (BSPBrushside brushside in brushSides)
+                            brushPlanes.Add(map.planeLump.Planes[brushside.planeIndex]);
+                        
+                        // Need min 4 sides
+                        if (brushPlanes.Count > 3)
+                        {
+                            // Calculate mesh data
+                            Polyhedron tempPolyhedron = new Polyhedron(brushPlanes);
+                            modelPolyhedra.Add(tempPolyhedron);
+                            
+                            int numPoints = tempPolyhedron.vertices.Count;
+                            
+                            // need min 4 points
+                            if (numPoints > -1)
+                            {
+                                // Create Brushes container game object for each mesh
+                                GameObject bContainer = new GameObject($"Model_{modelIndex}_Brush_{brushIndex}");
+                                // Add as child of parent meshesContainer game object
+                                bContainer.transform.parent = brushesContainer.transform;
+                                
+                                // Unity mesh setup
+                                
+                                Mesh tempMesh = new Mesh();
+                                tempMesh.name = bContainer.name;
+                                
+                                Vector3[] points = tempPolyhedron.vertices.ToArray();
+                                int[] pointsIdx = new int[numPoints];
+                                int i = 0;
+                                while (i < pointsIdx.Length)
+                                    pointsIdx[i] = i++;
+
+                                // Set vertices
+                                tempMesh.vertices = points;
+                                
+                                // Set vertices swizzled
+                                List<Vector3> swizzledPoints = new List<Vector3>();
+                                foreach (Vector3 p in points)
+                                    swizzledPoints.Add(Util.Swizzle3(p, true));
+                                tempMesh.vertices = swizzledPoints.ToArray();
+                                
+                                tempMesh.SetIndices(pointsIdx, MeshTopology.Points, 0);
+                                
+                                MeshFilter bMeshFilterComp = bContainer.AddComponent<MeshFilter>();
+                                bMeshFilterComp.mesh = tempMesh;
+                                
+                                // tempMesh.RecalculateBounds();
+                                // tempMesh.RecalculateNormals();
+                                // tempMesh.RecalculateTangents();
+                                // tempMesh.Optimize();
+                                
+                                MeshRenderer bMeshRendererComp = bContainer.AddComponent<MeshRenderer>();
+                                bMeshRendererComp.material = vertexPoint;
+                                bMeshRendererComp.material.color = new Color(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f));
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log($"Brush with less than 4 planes: Model_{modelIndex}_Brush_{brushIndex}");
+                        }
+                        
+                        brushIndex++;
+                    }
+                    GC.Collect();
                 }
                 
                 modelIndex++;
@@ -234,8 +302,10 @@ namespace VSharpBSP
                     // Add entity script
                     string entityComponentName = GetEntityTypeName(files, "worldspawn");
                     Entities.Entity comp = (Entities.Entity)modelGO.AddComponent(Type.GetType(entityComponentName));
-                    comp.AddAttributes(e_dict);
+                    // comp.AddAttributes(e_dict);
+                    comp.attributes = e_dict;
                     comp.Init();
+                    
                 }
                 // Model entities
                 else if (
@@ -258,7 +328,8 @@ namespace VSharpBSP
                     // Add entity script
                     string entityComponentName = GetEntityTypeName(files, e_dict["classname"]);
                     Entities.Entity comp = (Entities.Entity)modelGO.AddComponent(Type.GetType(entityComponentName));
-                    comp.AddAttributes(e_dict);
+                    // comp.AddAttributes(e_dict);
+                    comp.attributes = e_dict;
                     comp.Init();
                 }
                 // Point entities
@@ -286,7 +357,8 @@ namespace VSharpBSP
                     // Add entity script
                     string entityComponentName = GetEntityTypeName(files, entity.name);
                     Entities.Entity comp = (Entities.Entity)entity.AddComponent(Type.GetType(entityComponentName));
-                    comp.AddAttributes(e_dict);
+                    // comp.AddAttributes(e_dict);
+                    comp.attributes = e_dict;
                     comp.Init();
 
                     // Add gizmo script
@@ -601,8 +673,7 @@ namespace VSharpBSP
             }
             else
             {
-                Debug.Log("Texture not found! " + texName);
-
+                // Debug.Log("Texture not found! " + texName);
                 return replacementTexture;
             }
 
