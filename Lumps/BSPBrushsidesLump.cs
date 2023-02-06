@@ -1,4 +1,6 @@
 ﻿
+using System.Text;
+
 namespace VSharpBSP
 {
     public class BSPBrushsideLump
@@ -17,6 +19,19 @@ namespace VSharpBSP
             //{
             //    Debug.Log("Model - Leafs: " + Model.leafsCount.ToString() + " Nodes: " + Model.nodes[0] + ", " + Model.nodes[1] + ", " + Model.nodes[2] + ", " + Model.nodes[3]);
             //}
+        }
+        
+        public override string ToString()
+        {
+            StringBuilder blob = new StringBuilder();
+            int count = 0;
+            foreach (BSPBrushside item in Brushsides)
+            {
+                blob.Append("Brushside_" + count.ToString());
+                count++;
+            }
+
+            return blob.ToString();
         }
     }
 }

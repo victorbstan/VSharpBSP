@@ -24,7 +24,6 @@ namespace VSharpBSP.Entities
         public List<string> teamNames = new List<string>();
         public List<string> targetNames = new List<string>();
 
-
         //
         // UNITY METHODS
         //

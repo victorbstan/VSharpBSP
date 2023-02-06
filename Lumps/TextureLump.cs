@@ -69,7 +69,7 @@ namespace VSharpBSP
 
                     if (readyTextures.ContainsKey(tex.Name))
                     {
-                        Debug.Log("Updating texture with name " + tex.Name + ".jpg");
+                        // Debug.Log("Updating texture with name " + tex.Name + ".jpg");
                         readyTextures[tex.Name] = readyTex;
                     }
                     else

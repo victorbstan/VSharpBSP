@@ -187,7 +187,7 @@ namespace VSharpBSP
         {
             BSP.BaseStream.Seek(header.Directory[7].Offset, SeekOrigin.Begin);
             int modelCount = header.Directory[7].Length / 40;
-            Debug.Log($"Model count: {modelCount}");
+            // Debug.Log($"Model count: {modelCount}");
             modelLump = new BSPModelLump(modelCount);
             for (int i = 0; i < modelCount; i++)
             {
@@ -248,8 +248,8 @@ namespace VSharpBSP
             for (int i = 0; i < brushsideCount; i++)
             {
                 // http://www.mralligator.com/q3/#Brushsides
-                // int plane        Plane index.
-                // int texture      Texture index. 
+                // int plane    Plane index.
+                // int texture  Texture index. 
                 brushsideLump.Brushsides[i] = new BSPBrushside(
                     BSP.ReadInt32(),
                     BSP.ReadInt32()
@@ -259,17 +259,19 @@ namespace VSharpBSP
 
         private void ReadPlanes()
         {
+            // Note that planes are paired. The pair of planes with indices i and i ^ 1 are coincident planes with opposing normals. 
+                
             BSP.BaseStream.Seek(header.Directory[2].Offset, SeekOrigin.Begin);
             int planesCount = header.Directory[2].Length / 16;
             planeLump = new BSPPLaneLump(planesCount);
             for (int i = 0; i < planesCount; i++)
             {
                 // http://www.mralligator.com/q3/#Planes
-                // float[3] normal 	Plane normal.
+                // float[3]     normal 	Plane normal.
                 // float dist 	Distance from origin to plane along normal. 
                 planeLump.Planes[i] = new BSPPlane(
                     new Vector3(BSP.ReadSingle(), BSP.ReadSingle(), BSP.ReadSingle()),
-                    BSP.ReadInt32()
+                    BSP.ReadSingle()
                 );
             }
         }

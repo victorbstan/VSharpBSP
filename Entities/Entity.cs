@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using NativeSerializableDictionary;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace VSharpBSP.Entities
 {
@@ -48,8 +46,9 @@ namespace VSharpBSP.Entities
         public float lip = 0.16f;
 
         // Configuration (set by map)
-        public SerializableDictionary<string, string> attributes = new SerializableDictionary<string, string>();
-
+        // public SerializableDictionary<string, string> attributes = new SerializableDictionary<string, string>();
+        public Dictionary<string, string> attributes = new Dictionary<string, string>();
+        
         // Track trigger action state
         [Header("Protected Entity Attributes")]
         [SerializeField]
@@ -82,12 +81,13 @@ namespace VSharpBSP.Entities
 
         protected virtual void Awake()
         {
-            Init();
+            // Init();
         }
 
         // Start is called before the first frame update
         protected virtual void Start()
         {
+            // Init();
         }
 
         protected virtual void OnDrawGizmos()
@@ -176,10 +176,13 @@ namespace VSharpBSP.Entities
 
         public virtual void ProcessAttributes()
         {
-            foreach (var kvp in attributes)
+            // if (attributes.Any() == false)
+            //     return;
+            
+            foreach (KeyValuePair<string, string> kvp in attributes)
             {
                 string eKey = kvp.Key;
-                string eVal = kvp.Value.Value;
+                string eVal = kvp.Value;
 
                 switch (eKey)
                 {
@@ -256,7 +259,7 @@ namespace VSharpBSP.Entities
         public virtual void AddAttributes(Dictionary<string, string> dict)
         {
             foreach (KeyValuePair<string, string> item in dict)
-                attributes.AddDirect(item.Key, item.Value);
+                attributes.Add(item.Key, item.Value);
         }
 
         // DEPRECATED
@@ -277,7 +280,7 @@ namespace VSharpBSP.Entities
         {
             if (attributes.ContainsKey("team"))
             {
-                string teamName = attributes.GetValue("team");
+                string teamName = attributes["team"];
                 if (worldspawn.teams.ContainsKey(teamName))
                 {
                     worldspawn.teams[teamName].Add(this.gameObject);
@@ -296,7 +299,7 @@ namespace VSharpBSP.Entities
         {
             if (attributes.ContainsKey("targetname"))
             {
-                string targetName = attributes.GetValue("targetname");
+                string targetName = attributes["targetname"];
                 if (worldspawn.targets.ContainsKey(targetName))
                 {
                     worldspawn.targets[targetName].Add(this.gameObject);
@@ -308,13 +311,14 @@ namespace VSharpBSP.Entities
                     worldspawn.targets[targetName].Add(this.gameObject);
                     worldspawn.targetNames.Add(targetName); // DEBUGGING LIST
                 }
+                // Debug.Log("ADDED TARGET: " + this.targetname);
             }
         }
         
         public void LogAttributes()
         {
             foreach (var kvp in attributes)
-                Debug.Log($"Attribute Key: {kvp.Key} -> Value: {kvp.Value.Value}");
+                Debug.Log($"Attribute Key: {kvp.Key} -> Value: {kvp.Value}");
 
             if (attributes.Count == 0)
                 Debug.Log($"No attributes for: {classname}");

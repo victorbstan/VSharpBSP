@@ -21,7 +21,7 @@ namespace VSharpBSP
             vector.x = -vector.x;
 
             if (scale)
-                vector = vector * Constants.f_scaleMultiple; // Scale
+                vector *= Constants.f_scaleMultiple; // Scale
             return vector;
         }
         
