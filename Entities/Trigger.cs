@@ -1,10 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using Q3Movement;
-using Unity.VisualScripting;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -62,14 +56,15 @@ namespace VSharpBSP.Entities
                
                 // Use delegate
                 object[] args = new object[2];
-                args[0] = GetTargetLocation();
+                args[0] = worldspawn.GetTargetLocation(target);
                 args[1] = speed;
                 other.SendMessage("Push", args);
             } 
             else if (classname.StartsWith("trigger_teleport"))
             {
                 if (other.CompareTag("Player"))
-                    other.SendMessage("Teleport", GetTargetLocation());
+                    // other.SendMessage("Teleport", GetTargetLocation());
+                    other.SendMessage("Teleport", worldspawn.GetTargetLocation(target));
             }
         }
 
@@ -81,12 +76,13 @@ namespace VSharpBSP.Entities
             // }
         }
 
-        private Vector3 GetTargetLocation()
-        {
-            if (worldspawn.targets.ContainsKey(target))
-                return worldspawn.targets[target].First().transform.position;
-            else
-                return Vector3.up;
-        }
+        // private Vector3 GetTargetLocation()
+        // {
+        //     Debug.Log("GET TARGET: " + target);
+        //     if (worldspawn.targets.ContainsKey(target))
+        //         return worldspawn.targets[target].First().transform.position;
+        //     
+        //     return Vector3.up;
+        // }
     }
 }
