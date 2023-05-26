@@ -6,11 +6,11 @@ namespace VSharpBSP
     // The planes lump stores a generic set of planes that are in turn referenced by nodes and brushsides.
     // There are a total of length / sizeof(plane) records in the lump, where length is the size of the lump itself,
     // as specified in the lump directory.
-    public class BSPPLaneLump
+    public class PlaneLump
     {
         public BSPPlane[] Planes { get; set; }
 
-        public BSPPLaneLump(int planesCount)
+        public PlaneLump(int planesCount)
         {
             Planes = new BSPPlane[planesCount];
         }

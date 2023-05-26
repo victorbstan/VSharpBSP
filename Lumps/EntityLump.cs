@@ -11,7 +11,7 @@
 
         public override string ToString()
         {
-            return EntityString;
+            return "EntityLump: " + EntityString;
         }
     }
 }
