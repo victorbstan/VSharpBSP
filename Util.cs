@@ -16,13 +16,43 @@ namespace VSharpBSP
             // Unity axis: x: horizontal, y: vertical, z: depth
             float tempZ = vector.z;
             float tempY = vector.y;
+            vector.x = -vector.x;
             vector.y = tempZ;
             vector.z = -tempY;
-            vector.x = -vector.x;
 
             if (scale)
                 vector *= Constants.f_scaleMultiple; // Scale
             return vector;
+        }
+
+        // NOTE: AI Generated, check that it actually works as expected...
+        public static Vector3 CoordinateToUnity(Vector3 idTech3Coordinates)
+        { 
+            // Swap the X and Z coordinates and invert the Z coordinate to convert to Unity coordinate space.
+            float unityX = idTech3Coordinates.x;
+            float unityY = idTech3Coordinates.z;
+            float unityZ = -idTech3Coordinates.y;
+
+            return new Vector3(unityX, unityY, unityZ);
+        }
+        
+        public static Vector3 NormalToUnity(Vector3 idTech3Normal)
+        {
+            // Swap the Y and Z components to account for the difference in coordinate space
+            // float unityX = idTech3Normal.x;
+            // float unityY = idTech3Normal.z;
+            // float unityZ = idTech3Normal.y;
+            
+            float unityX = idTech3Normal.z;
+            float unityY = idTech3Normal.y;
+            float unityZ = -idTech3Normal.x;
+            
+            // swizzled
+            // float unityX = idTech3Normal.z;
+            // float unityY = idTech3Normal.y;
+            // float unityZ = -idTech3Normal.x;
+
+            return new Vector3(unityX, unityY, unityZ);
         }
         
         public static Vector3 AngleToVector3(float ang)

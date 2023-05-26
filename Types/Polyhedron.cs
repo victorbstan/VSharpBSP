@@ -23,15 +23,15 @@ namespace VSharpBSP
             for (int i = 0; i < planes.Length; i++)
             {
                 BSPPlane p1 = planes[i];
-
+            
                 for (int j = i + 1; j < planes.Length; j++)
                 {
                     BSPPlane p2 = planes[j];
-
+            
                     for (int k = j + 1; k < planes.Length; k++)
                     {
                         BSPPlane p3 = planes[k];
-
+            
                         Vector3 point = new Vector3();
                         if (GetPlaneIntersectionPoint(p1, p2, p3, out point))
                         {
@@ -40,6 +40,19 @@ namespace VSharpBSP
                     }
                 }
             }
+            
+            // for (int i = 0; i < planes.Length -2; i++)
+            // {
+            //     BSPPlane p1 = planes[i];
+            //     BSPPlane p2 = planes[i++];
+            //     BSPPlane p3 = planes[i++];
+            //     
+            //     Vector3 point = new Vector3();
+            //     if (GetPlaneIntersectionPoint(p1, p2, p3, out point))
+            //         this.vertices.Add(point);
+            // }
+            
+            
         }
 
         private bool GetPlaneIntersectionPoint(BSPPlane p0, BSPPlane p1, BSPPlane p2, out Vector3 intersectionPoint)
@@ -47,6 +60,7 @@ namespace VSharpBSP
             const float EPSILON = 1e-4f;
 
             var dot = Vector3.Dot(Vector3.Cross(p0.normal, p1.normal), p2.normal);
+            // var dot = Vector3.Dot(Vector3.Cross(p2.normal, p1.normal), p0.normal);
             if (dot < float.Epsilon)
             // if (dot < EPSILON)
             {
