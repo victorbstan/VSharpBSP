@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Linq;
-using VSharpBSP.Extensions;
-using Random = UnityEngine.Random;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace VSharpBSP
 {
@@ -140,7 +140,7 @@ namespace VSharpBSP
                 
                 // MODEL BRUSHES
 
-                if (modelIndex > 0)
+                if (modelIndex == 17)
                 {
                     // Model > Brushes > Brushsides > Plane > BrushToMesh()
                     // // Create Brushes container game object for each mesh
@@ -157,64 +157,26 @@ namespace VSharpBSP
                         BSPBrushside[] brushSides = map.brushsideLump.Brushsides.Skip(brush.brushsideIndex).Take(brush.brushdidesCount).ToArray();
 
                         List<BSPPlane> brushPlanes = new List<BSPPlane>();
-                        foreach (BSPBrushside brushside in brushSides)
-                            brushPlanes.Add(map.planeLump.Planes[brushside.planeIndex]);
-                        
-                        // Need min 4 sides
-                        if (brushPlanes.Count > 3)
-                        {
-                            // Calculate mesh data
-                            Polyhedron tempPolyhedron = new Polyhedron(brushPlanes);
-                            modelPolyhedra.Add(tempPolyhedron);
-                            
-                            int numPoints = tempPolyhedron.vertices.Count;
-                            
-                            // need min 4 points
-                            if (numPoints > -1)
-                            {
-                                // Create Brushes container game object for each mesh
-                                GameObject bContainer = new GameObject($"Model_{modelIndex}_Brush_{brushIndex}");
-                                // Add as child of parent meshesContainer game object
-                                bContainer.transform.parent = brushesContainer.transform;
-                                
-                                // Unity mesh setup
-                                
-                                Mesh tempMesh = new Mesh();
-                                tempMesh.name = bContainer.name;
-                                
-                                Vector3[] points = tempPolyhedron.vertices.ToArray();
-                                int[] pointsIdx = new int[numPoints];
-                                int i = 0;
-                                while (i < pointsIdx.Length)
-                                    pointsIdx[i] = i++;
+                        foreach (BSPBrushside brushSide in brushSides)
+                            brushPlanes.Add(map.planeLump.Planes[brushSide.planeIndex]);
 
-                                // Set vertices
-                                tempMesh.vertices = points;
-                                
-                                // Set vertices swizzled
-                                List<Vector3> swizzledPoints = new List<Vector3>();
-                                foreach (Vector3 p in points)
-                                    swizzledPoints.Add(Util.Swizzle3(p, true));
-                                tempMesh.vertices = swizzledPoints.ToArray();
-                                
-                                tempMesh.SetIndices(pointsIdx, MeshTopology.Points, 0);
-                                
-                                MeshFilter bMeshFilterComp = bContainer.AddComponent<MeshFilter>();
-                                bMeshFilterComp.mesh = tempMesh;
-                                
-                                // tempMesh.RecalculateBounds();
-                                // tempMesh.RecalculateNormals();
-                                // tempMesh.RecalculateTangents();
-                                // tempMesh.Optimize();
-                                
-                                MeshRenderer bMeshRendererComp = bContainer.AddComponent<MeshRenderer>();
-                                bMeshRendererComp.material = vertexPoint;
-                                bMeshRendererComp.material.color = new Color(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f));
-                            }
-                        }
-                        else
+                        foreach (BSPPlane bspPlane in brushPlanes)
                         {
-                            Debug.Log($"Brush with less than 4 planes: Model_{modelIndex}_Brush_{brushIndex}");
+                            // UnityEngine.Plane plane = PlaneTransformer.TransformIdTech3PlaneToUnity(bspPlane);
+                            // GameObject quad = PlaneToQuadConverter.CreateQuadFromPlane(plane);
+
+                            // quad.transform.position = Util.Swizzle3(quad.transform.position);
+                            // quad.transform.position = Vector3.zero;
+                            
+                            // Vector3 quadCenter = -plane.normal * plane.distance;
+                            Vector3 quadCenter = -bspPlane.normal * bspPlane.distance;
+                            
+                            // Adjust the coordinate system if necessary
+                            // quadCenter = CoordinateTransformer.TransformIdTech3NormalToUnity(quadCenter);
+
+                            GameObject gizmoHolderGO = new GameObject("GizmoHolder");
+                            gizmoHolderGO.transform.position = quadCenter;
+                            gizmoHolderGO.AddComponent<SphereGizmo>();
                         }
                         
                         brushIndex++;
@@ -303,7 +265,7 @@ namespace VSharpBSP
                     string entityComponentName = GetEntityTypeName(files, "worldspawn");
                     Entities.Entity comp = (Entities.Entity)modelGO.AddComponent(Type.GetType(entityComponentName));
                     // comp.AddAttributes(e_dict);
-                    comp.attributes = e_dict;
+                    comp.attributes.CopyFrom(e_dict);
                     comp.Init();
                     
                 }
@@ -329,7 +291,7 @@ namespace VSharpBSP
                     string entityComponentName = GetEntityTypeName(files, e_dict["classname"]);
                     Entities.Entity comp = (Entities.Entity)modelGO.AddComponent(Type.GetType(entityComponentName));
                     // comp.AddAttributes(e_dict);
-                    comp.attributes = e_dict;
+                    comp.attributes.CopyFrom(e_dict);
                     comp.Init();
                 }
                 // Point entities
@@ -358,7 +320,7 @@ namespace VSharpBSP
                     string entityComponentName = GetEntityTypeName(files, entity.name);
                     Entities.Entity comp = (Entities.Entity)entity.AddComponent(Type.GetType(entityComponentName));
                     // comp.AddAttributes(e_dict);
-                    comp.attributes = e_dict;
+                    comp.attributes.CopyFrom(e_dict);
                     comp.Init();
 
                     // Add gizmo script

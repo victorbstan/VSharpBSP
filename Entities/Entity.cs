@@ -47,7 +47,7 @@ namespace VSharpBSP.Entities
 
         // Configuration (set by map)
         // public SerializableDictionary<string, string> attributes = new SerializableDictionary<string, string>();
-        public Dictionary<string, string> attributes = new Dictionary<string, string>();
+        public GenericDictionary<string, string> attributes = new GenericDictionary<string, string>();
         
         // Track trigger action state
         [Header("Protected Entity Attributes")]
@@ -81,7 +81,7 @@ namespace VSharpBSP.Entities
 
         protected virtual void Awake()
         {
-            // Init();
+            Init();
         }
 
         // Start is called before the first frame update

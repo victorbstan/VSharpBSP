@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 namespace VSharpBSP
 {
@@ -17,30 +16,13 @@ namespace VSharpBSP
 
         public BSPPlane(Vector3 norm, float dist)
         {
-            this.normal = norm;
-            this.distance = dist;
-
-            // Swizzle A
-            // this.normal = new Vector3(
-            //     -norm.x,
-            //     norm.z,
-            //     -norm.y
-            // );
+            // this.normal = norm;
+            this.normal = new Vector3(norm.x, norm.z, -norm.y);
+            // this.normal = CoordinateTransformer.TransformIdTech3NormalToUnity(this.normal);
+            this.normal.Normalize();
             
-            // Swizzle B
-            // float tempx = -norm.x;
-            // float tempy = norm.z;
-            // float tempz = -norm.y;
-            // this.normal = new Vector3(tempx, tempy, tempz);
-            
-            // Swizzle C
-            // float tempZ = normal.z;
-            // float tempY = normal.y;
-            // normal.x = -normal.x;
-            // normal.y = tempZ;
-            // normal.z = -tempY;
-            //
-            // this.distance = dist * Constants.f_scaleMultiple;
+            // this.distance = dist;
+            this.distance = dist * Constants.f_scaleMultiple;
         }
     }
 }

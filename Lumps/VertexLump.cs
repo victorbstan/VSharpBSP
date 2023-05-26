@@ -7,9 +7,9 @@ namespace VSharpBSP
         public Vertex[] Verts { get; set; }
         public int[] MeshVerts { get; set; }
 
-        public VertexLump(int VertexCount)
+        public VertexLump(int vertexCount)
         {
-            Verts = new Vertex[VertexCount];
+            Verts = new Vertex[vertexCount];
         }
 
         public override string ToString()

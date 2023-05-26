@@ -13,20 +13,49 @@ namespace VSharpBSP
         // The header contains the directory of lumps
         public BSPHeader header;
 
-        // These are the objects that hold data extraced from the lumps
+        // These are the objects that hold data extracted from the lumps
         // each one has public fields that hold the data in them
         // Note that there are many lumps we don't need, so they
         // aren't processed.  If you want a tool to parse a .bsp
-        // more throughly, check my github/google for "SharpBSP".
+        // more thoroughly, check my github/google for "SharpBSP".
+        
+        // From http://www.mralligator.com/q3/
+        // Index 	Lump Name 	Description
+        // 0	    Entities 	Game-related object descriptions.
+        // 1	    Textures 	Surface descriptions.
+        // 2	    Planes 	    Planes used by map geometry.
+        // 3	    Nodes 	    BSP tree nodes.
+        // 4	    Leafs 	    BSP tree leaves.
+        // 5	    Leaffaces 	Lists of face indices, one list per leaf.
+        // 6	    Leafbrushes Lists of brush indices, one list per leaf.
+        // 7	    Models 	    Descriptions of rigid world geometry in map.
+        // 8	    Brushes 	Convex polyhedra used to describe solid space.
+        // 9	    Brushsides 	Brush surfaces.
+        // 10	    Vertexes 	Vertices used to describe faces.
+        // 11	    Meshverts 	Lists of offsets, one list per mesh.
+        // 12	    Effects 	List of special map effects.
+        // 13	    Faces 	    Surface geometry.
+        // 14	    Lightmaps 	Packed lightmap data.
+        // 15	    Lightvols 	Local illumination data.
+        // 16	    Visdata 	Cluster-cluster visibility data. 
         public EntityLump entityLump;
         public TextureLump textureLump;
+        public PlaneLump planeLump;
+        public NodeLump nodeLump;
+        public LeafLump leafLump;
+        public LeafFaceLump leafFaceLump;
+        public LeafBrushLump leafBrushLump;
+        public ModelLump modelLump;
+        public BrushLump brushLump;
+        public BrushsideLump brushsideLump;
         public VertexLump vertexLump;
+        public MeshvertLump meshvertLump;
+        public EffectLump effectLump;
         public FaceLump faceLump;
         public LightmapLump lightmapLump;
-        public BSPModelLump modelLump;
-        public BSPBrushLump brushLump;
-        public BSPBrushsideLump brushsideLump;
-        public BSPPLaneLump planeLump;
+        public LightvolLump lightvolLump;
+        public VisdataLump visdataLump;
+        
 
         public BSPMap(string filename, bool loadFromPK3)
         {
@@ -188,7 +217,7 @@ namespace VSharpBSP
             BSP.BaseStream.Seek(header.Directory[7].Offset, SeekOrigin.Begin);
             int modelCount = header.Directory[7].Length / 40;
             // Debug.Log($"Model count: {modelCount}");
-            modelLump = new BSPModelLump(modelCount);
+            modelLump = new ModelLump(modelCount);
             for (int i = 0; i < modelCount; i++)
             {
                 // http://www.mralligator.com/q3/#Models
@@ -225,7 +254,7 @@ namespace VSharpBSP
         {
             BSP.BaseStream.Seek(header.Directory[8].Offset, SeekOrigin.Begin);
             int brushCount = header.Directory[8].Length / 12;
-            brushLump = new BSPBrushLump(brushCount);
+            brushLump = new BrushLump(brushCount);
             for (int i = 0; i < brushCount; i++)
             {
                 // http://www.mralligator.com/q3/#Brushes
@@ -244,7 +273,7 @@ namespace VSharpBSP
         {
             BSP.BaseStream.Seek(header.Directory[9].Offset, SeekOrigin.Begin);
             int brushsideCount = header.Directory[9].Length / 8;
-            brushsideLump = new BSPBrushsideLump(brushsideCount);
+            brushsideLump = new BrushsideLump(brushsideCount);
             for (int i = 0; i < brushsideCount; i++)
             {
                 // http://www.mralligator.com/q3/#Brushsides
@@ -263,7 +292,7 @@ namespace VSharpBSP
                 
             BSP.BaseStream.Seek(header.Directory[2].Offset, SeekOrigin.Begin);
             int planesCount = header.Directory[2].Length / 16;
-            planeLump = new BSPPLaneLump(planesCount);
+            planeLump = new PlaneLump(planesCount);
             for (int i = 0; i < planesCount; i++)
             {
                 // http://www.mralligator.com/q3/#Planes
