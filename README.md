@@ -23,3 +23,11 @@ Q3 BSP parser and scene builder for Unity 3D
 * This projects seeks only to parse BSP3 files compatible with the game,
 and re-create functionality based on data from the BSP file. 
 * No proprietary or GPL code should be included in this project.
+
+### Screenshots
+
+In Unity Player
+<img width="1796" alt="Screenshot 2024-02-05 at 8 06 33 PM" src="https://github.com/victorbstan/VSharpBSP/assets/315297/d38924f3-5512-47a8-9969-95c6e144e3a8">
+
+In Unity Editor
+<img width="1343" alt="Screenshot 2024-02-05 at 8 07 36 PM" src="https://github.com/victorbstan/VSharpBSP/assets/315297/f639ff95-5c85-478b-a9dc-66f467eccfc0">
